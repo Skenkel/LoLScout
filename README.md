@@ -1,26 +1,41 @@
-# LoLScout
-A Data Science project in Finding optimal picks/bans for league of legends. 
-Project initiated to teach the author machine learning using league of legends as a dataset. 
 
-Data gathering Structure: 
-Using some pre-seeded summoner ids, the systems gets all of the games players have played. 
-For each game, it adds a line to two data frames (one data frame assumes role is what matters, the other assumes that pick order matters).  (assuming the game id doesn't exist in the index).
-It also looks for any players that do not exist in the index, and adds them. 
+# LolScout
+### Purpose:
+In the 5 v 5 Videogame/Esport two teams of 5 players compete against each other. 
+Before the 'Game' start each player chooses 1 of (currently 133) characters, known as a champion. No two players may play the same champions. 
+In ranked and professional play, players may "ban" a champion and prevent either side from choosing that champion. 
+There are several common strategies for this 'Pick/Ban' phase:
+1. Ban the "strongest" champion. 
+2. Ban the champions that are strongest against champions your team is planning on picking. 
+3. Ban the champions that (in professional play) you know your opponents are most succesful/ skilled with. 
 
-After finishing all matches for all players, it saves out the csvs, and requests being run again. 
+Since a team only has 5 bans, and every banned champion is banned for both teams, evaluating these three goals (and which 5 champions are worth banning) is a difficult task for professional League of Legends teams. 
 
-This is a version 1 data engineering design. This design is limited by the current riot api keys (keys only last 24 hours), meaning after 72000 requests a new riot api key must be gnerated. 
-Version 2 will use sqlite for the databases. 
-Version 3 will generate a full postgresql database. 
-
-There is a companion program that goes to champion.gg, and pulls all of the stats for a champion by role. 
-To explain the ids in that program. 
-1 is top, 2 is jungle, 3 is mid, 4 is adc, 5 is support. The format is 
-position_championid_mm_dd_yy_patch
-so 3_001_07-09-2017-7.11 is  annie (champion id 1) mid (position 3) on 7-09-2017 for patc 7.11
+The purpose of the project was to make classifier (Team 1 winning being the target), that would help answer the question of how to optimally do pick ban, and to use that classifier's output to answer the above questions. 
 
 
 
+```python
+
+```
+
+## Data-Pull:Gathering Data
+This notebook shows the current version of my data collection process. 
+It's three different functions:
+The first uses a champion.gg api key to poll champion.gg for the  k/d/a  and win/loss percentage of every champion in champion.gg
+I don't end up using this data (for reasons fully explained on http://www.drunkenthieves.com/blog/lol_scout/ )
+
+The second goes through  a list of summoners that haven't had summary statistics scraped, and uses cassiopeia to get those statistics. 
+
+The third goes through a list of summoners, gets all of the ranked matches the api will return, adds that to a dataframe, and adds summoners in those matches to the 'summoners to scrape' list. 
+
+## Data-Prep:Imputing Data
+This notebook shows the current data prep steps I use for the xbgoost and keras classifiers. 
+Because of the data collected, a majority of the player's do not have W/L status for all champions or for the specific champion they play in that match.
 
 
-##Disclaimer LoLScout isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
+## Simple Champion Selection Classifiers
+The notebook 5v5 rps test (which stands for 5 v 5 rock paper scissors), shows how a classifier works ignoring all of the data except for the champions chosen by each team. 
+
+## Keras/Xgbost Selection Classifiers with secondary statistics
+This notebook shows the using classifiers with the prepped data from the data-prep notebook. Unfortunately the results are no better than the 'simple' models, which leads me to believe that I have insufficient data to build an effective model. 
